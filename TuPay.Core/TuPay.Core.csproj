@@ -15,7 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Tgs.MessageQueue" Version="2.0.0" />
+    <PackageReference Include="Tgs.MessageQueue" Version="2.1.0" />
     <PackageReference Include="Tgs.Payment.Client" Version="0.4.4" />
     <PackageReference Include="Tgs.PaymentService.Client" Version="0.2.2" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
