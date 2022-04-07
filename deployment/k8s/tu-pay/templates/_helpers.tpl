@@ -48,6 +48,8 @@ Selector labels
 {{- define "tu-pay.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "tu-pay.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+tgs.kind: payment
+app: {{ include "tu-pay.name" . }}
 {{- end }}
 
 {{/*

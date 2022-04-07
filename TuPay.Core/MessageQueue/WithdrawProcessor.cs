@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Microsoft.Extensions.Options;
 using Tgs.MessageQueue;
+using Tgs.Payment.Clients;
 using Tgs.Payment.Protos;
 
 namespace Tgs.Payment.TuPay.MessageQueue;
@@ -9,12 +10,18 @@ internal class WithdrawProcessor : IMessageProcessor
 {
 	private readonly TuPaySerializer _tuPaySerializer;
 	private readonly TuPayClient _tuPayClient;
+	private readonly IPaymentClient _paymentClient;
 	private readonly TuPayOptions _options;
 
-	public WithdrawProcessor(TuPaySerializer tuPaySerializer, IOptions<TuPayOptions> tuPayOptionsAccessor, TuPayClient tuPayClient)
+	public WithdrawProcessor(
+		TuPaySerializer tuPaySerializer,
+		IOptions<TuPayOptions> tuPayOptionsAccessor,
+		TuPayClient tuPayClient,
+		IPaymentClient paymentClient)
 	{
 		_tuPaySerializer = tuPaySerializer ?? throw new ArgumentNullException(nameof(tuPaySerializer));
 		_tuPayClient = tuPayClient ?? throw new ArgumentNullException(nameof(tuPayClient));
+		_paymentClient = paymentClient ?? throw new ArgumentNullException(nameof(paymentClient));
 		_options = tuPayOptionsAccessor.Value;
 	}
 
@@ -57,6 +64,11 @@ internal class WithdrawProcessor : IMessageProcessor
 				string.IsNullOrWhiteSpace(remoteInfo.PayTime) ? null : ConvertToSystemDate(remoteInfo.PayTime),
 				remoteInfo.Remark,
 				remoteInfo.Status));
+
+		var thirdPartyOrderNo = applyInfo.Response.TransferNo;
+		await _paymentClient
+			.SaveWithdrawFormThirdPartyOrderNoAsync(settings.FormId, thirdPartyOrderNo)
+			.ConfigureAwait(false);
 
 		var msg = new WithdrawResponse
 		{

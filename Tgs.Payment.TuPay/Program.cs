@@ -8,6 +8,10 @@ using Tgs.Payment.TuPay.MessageQueue;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+	.AddJsonFile("/config/appsettings.json", true)
+	.AddEnvironmentVariables();
+
 builder.Logging
 	.AddOpenTelemetry(options =>
 	{

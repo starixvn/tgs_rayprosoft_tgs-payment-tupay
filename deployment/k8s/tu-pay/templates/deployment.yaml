@@ -4,6 +4,8 @@ metadata:
   name: {{ include "tu-pay.fullname" . }}
   labels:
     {{- include "tu-pay.labels" . | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -55,10 +57,21 @@ spec:
                 secretKeyRef:
                   name: tgs-connections
                   key: payment-tupay-callback
+            - name: DOTNET_DiagnosticPorts
+              value: /diag/port
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - mountPath: /config/appsettings.json
+              name: appsettings
+              readOnly: true
+              subPath: appsettings.json
+            - mountPath: /diag
+              name: diagvol
+            - mountPath: /dumps
+              name: dumpsvol
           livenessProbe:
             httpGet:
               path: /healthz
@@ -71,6 +84,47 @@ spec:
             failureThreshold: 30
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        - name: monitor
+          image: mcr.microsoft.com/dotnet/monitor:6.0.0
+          args: [ "--no-auth" ]
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DOTNETMONITOR_DiagnosticPort__ConnectionMode
+              value: Listen
+            - name: DOTNETMONITOR_DiagnosticPort__EndpointName
+              value: /diag/port
+            - name: DOTNETMONITOR_Storage__DumpTempFolder
+              value: /dumps
+            - name: DOTNETMONITOR_Urls
+              value: http://+:52324
+            - name: DOTNETMONITOR_Metrics__Endpoints
+              value: http://+:52325
+            - name: XDG_CONFIG_HOME
+              value: /config
+          volumeMounts:
+            - mountPath: /diag
+              name: diagvol
+            - mountPath: /dumps
+              name: dumpsvol
+            - mountPath: /config/dotnet-monitor/settings.json
+              name: appsettings
+              readOnly: true
+              subPath: monitor.settings.json
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+      volumes:
+        - name: appsettings
+          configMap:
+            name: configmap-{{ include "tu-pay.fullname" . }}
+        - name: diagvol
+          emptyDir: {}
+        - name: dumpsvol
+          emptyDir: {}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

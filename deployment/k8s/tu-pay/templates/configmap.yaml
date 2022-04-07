@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-{{ include "tu-pay.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tu-pay.labels" . | nindent 4 }}
+data:
+  appsettings.json: |
+    {
+      "TuPay": {
+        "PaymentServiceBaseUrl": "http://payment-api"
+      }
+    }
+  monitor.settings.json: |
+    {
+      "Logging":{
+        "Console": {
+          "FormatterName": "json"
+        },
+        "LogLevel": {
+          "Default": "Warning",
+          "Microsoft": "Warning",
+          "Microsoft.Diagnostics": "Warning",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      }
+    }
