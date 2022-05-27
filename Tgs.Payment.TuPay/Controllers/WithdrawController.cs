@@ -21,6 +21,7 @@ public class WithdrawController : ControllerBase
 		[FromServices] TuPayHasher hasher,
 		[FromServices] IGetService<GetWithdrawFormQuery, WithdrawForm?> getFormService,
 		[FromServices] IPaymentServiceClient paymentServiceClient,
+		[FromServices] IPaymentClient paymentClient,
 		[FromServices] TuPaySerializer serializer,
 		[FromForm] IFormCollection formData)
 	{
@@ -71,8 +72,11 @@ public class WithdrawController : ControllerBase
 		{
 			await paymentServiceClient.SubmitWithdrawFormStatusAsync(
 				withdrawForm.Id,
-				PaymentFlowState.Paid,
-				serializer.Serialize(paymentReturn)).ConfigureAwait(false);
+				paymentReturn: serializer.Serialize(paymentReturn)).ConfigureAwait(false);
+
+			await paymentClient
+				.PaidWithdrawAsync(withdrawForm.Id, withdrawForm.BrandId, HttpContext.RequestAborted)
+				.ConfigureAwait(false);
 		}
 
 		return "success";
