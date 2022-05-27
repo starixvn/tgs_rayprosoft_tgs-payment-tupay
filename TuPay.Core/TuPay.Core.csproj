@@ -11,13 +11,13 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.1.46">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Tgs.MessageQueue" Version="2.1.0" />
-    <PackageReference Include="Tgs.Payment.Client" Version="0.4.4" />
-    <PackageReference Include="Tgs.PaymentService.Client" Version="0.2.2" />
+    <PackageReference Include="Tgs.Payment.Client" Version="0.4.6" />
+    <PackageReference Include="Tgs.PaymentService.Client" Version="0.4.0" />
     <PackageReference Include="TGS.ServiceUtility" Version="0.1.0" />
   </ItemGroup>
 

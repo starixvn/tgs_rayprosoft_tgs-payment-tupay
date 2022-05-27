@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using Tgs.Payment.TuPay;
 
@@ -30,14 +28,6 @@ public static class ServiceCollectionExtensions
 				var skyPayOptions = sp.GetRequiredService<IOptions<TuPayOptions>>().Value;
 
 				options.PaymentServiceBaseUrl = skyPayOptions.PaymentServiceBaseUrl;
-
-				options.JsonSerializerOptions = new JsonSerializerOptions
-				{
-					PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-					Converters = {
-						new JsonStringEnumConverter()
-					}
-				};
 			})
 			.AddTransient<TuPayHasher>()
 			.AddSingleton<TuPaySerializer>();
