@@ -6,7 +6,7 @@ pipeline {
 	
 	environment {
 		BuildConfiguration="Debug"
-		ImageName="harbor.rpgp.cc/tgs/payment-tupay"
+		ImageName="pgtgs/payment-tupay"
 	}
 
 	stages {
